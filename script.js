@@ -1,6 +1,6 @@
 let origBoard;
-const huPlayer = 'O'; 
-const aiPlayer = 'X'; 
+let huPlayer = 'O';
+let aiPlayer = 'X';
 const winCombos = [
 	[0, 1, 2], 
 	[3, 4, 5], 
@@ -15,13 +15,27 @@ const winCombos = [
 const cells = document.querySelectorAll('.cell');
 startGame(); 
 
+function selectSym(sym) {
+	huPlayer = sym;
+	aiPlayer = sym === 'O' ? 'X' : 'O';
+	origBoard = Array.from(Array(9).keys());
+
+	for (let i = 0; i < cells.length; i++) {
+		cells[i].addEventListener('click', turnClick, false);
+	}
+
+	if (aiPlayer === 'X')
+		turn(bestSpot(), aiPlayer);
+
+	document.querySelector('.selectSym').style.display = 'none';
+}
+
 function startGame() {
 	document.querySelector('.endgame').style.display = "none";
-	origBoard = Array.from(Array(9).keys()); 
+	document.querySelector('.selectSym').style.display = "block";
 	for (let i = 0; i < cells.length; i++) {
 		cells[i].innerText = '';
 		cells[i].style.removeProperty('background-color');
-		cells[i].addEventListener('click', turnClick, false); 
 	}
 }
 
@@ -39,6 +53,7 @@ function turn(squareId, player) {
 	let gameWon = checkWin(origBoard, player);
 	if (gameWon) 
 		gameOver(gameWon);
+	checkTie();
 }
 
 function checkWin(board, player) {
