@@ -45,17 +45,21 @@ function checkWin(board, player) {
 	let plays = board.reduce((a, e, i) => e === player ? a.concat(i) : a, []);
 	let gameWon = null; 
 	for (let [index, win] of winCombos.entries()) {
-		if (win.every(e => plays.indexOf(e) > -1)) {
+		if (match(win, plays)) {
 			gameWon = {index: index, player: player};
 			break;
-		} 
+		}
 	}
 	return gameWon;
 }
 
+function match(win, plays) {
+	return win.every(e => plays.includes(e));
+}
+
 function gameOver(gameWon) {
 	for (let index of winCombos[gameWon.index]) {
-		document.getElementById(index).style.backgroundColor = 
+		document.getElementById(String(index)).style.backgroundColor =
 			gameWon.player === huPlayer ? "blue" : "red";
 	}
 
@@ -91,9 +95,16 @@ function checkTie() {
 	return false;
 }
 
+// get the best move in the current board
 function minimax(newBoard, player) {
+	// get all available spots
 	let availSpots = emptySquares(newBoard);
 
+	// return a value (-10, 0, 10) if a terminal state is found
+	// 3 terminal states:
+	// - human player wins
+	// - ai player wins
+	// - 2 players tie
 	if (checkWin(newBoard, player)) {
 		return {score: -10};
 	} else if (checkWin(newBoard, aiPlayer)) {
@@ -102,12 +113,20 @@ function minimax(newBoard, player) {
 		return {score: 0};
 	}
 
+	// collect move objects in array moves
 	let moves = [];
+
+	// loop through all available spots
 	for (let i = 0; i < availSpots.length; i++) {
+
+		// create an object for a spot
 		let move = {};
-		move.index = newBoard[availSpots[i]]; 
+		// save its index
+		move.index = newBoard[availSpots[i]];
+		// place current player in that spot
 		newBoard[availSpots[i]] = player; 
 
+		// collect the score of the opponent with minimax
 		let result;
 		if (player === aiPlayer) {
 			result = minimax(newBoard, huPlayer);
@@ -117,27 +136,31 @@ function minimax(newBoard, player) {
 			move.score = result.score; 
 		}
 
+		// reset the spot to empty
 		newBoard[availSpots[i]] = move.index; 
 
+		// collect that move with its index and score
 		moves.push(move);
 	}
 
+	// find the best move (with best score) from all the moves
 	let bestMove;
 	let bestScore;
-	if (player === aiPlayer) {
-		bestScore = -10000;
 
-		// look for highest score
+	// look for the highest score if player is ai
+	if (player === aiPlayer) {
+		bestScore = -Infinity;
+
 		for (let i = 0; i < moves.length; i++) {
 			if (moves[i].score > bestScore) {
 				bestScore = moves[i].score; 
 				bestMove = i;
 			}
 		}
+	// look for the lowest score if player is human
 	} else {
-		bestScore = 10000;
+		bestScore = Infinity;
 
-		// look for lowest score
 		for (let i = 0; i < moves.length; i++) {
 			if (moves[i].score < bestScore) {
 				bestScore = moves[i].score; 
@@ -146,5 +169,6 @@ function minimax(newBoard, player) {
 		}
 	}
 
+	// return the best move
 	return moves[bestMove];
 }
