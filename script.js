@@ -2,8 +2,6 @@ let origBoard;
 let huPlayer = 'O';
 let aiPlayer = 'X';
 let treeLength = 0;
-let alpha = Infinity;
-let beta = -Infinity;
 const winCombos = [
     [0, 1, 2],
     [3, 4, 5],
@@ -28,7 +26,7 @@ function selectSym(sym) {
     }
 
     if (aiPlayer === 'X') {
-        turn(bestSpot(), aiPlayer);
+        turn([0, 2, 6, 8][Math.floor(Math.random()*4)], aiPlayer);
         console.log(treeLength);
         treeLength = 0;
     }
@@ -98,16 +96,12 @@ function declareWinner(who) {
     document.querySelector(".endgame .text").innerText = who;
 }
 
-function emptySquares() {
-    return origBoard.filter(s => typeof s === 'number');
-}
-
 function bestSpot() {
     return findBestMove(origBoard, aiPlayer);
 }
 
 function checkTie() {
-    if (emptySquares().length === 0) {
+    if (!isMoveLeft(origBoard)) {
         for (let i = 0; i < cells.length; i++) {
             cells[i].style.backgroundColor = "green";
             cells[i].removeEventListener('click', turnClick, false);
@@ -144,18 +138,21 @@ function evaluate(board) {
 
 // consider all possible ways the game can go and return
 // the value of the board
-function minimax_0(board, depth, player) {
+function minimax(board, player, depth) {
     treeLength++;
     let score = evaluate(board);
 
-    if (score === 10 ) {
-        return score;
+    // ai player wins
+    if (score === 10) {
+        return score - depth;
     }
 
+    // human player wins
     if (score === -10) {
-        return score;
+        return score + depth;
     }
 
+    // a tie
     if (!isMoveLeft(board)) {
         return 0;
     }
@@ -171,10 +168,13 @@ function minimax_0(board, depth, player) {
 
                 // call minimax recursively and choose
                 // the maximum value
-                best = Math.max(best, minimax_0(board, depth + 1, huPlayer));
+                best = Math.max(best, minimax(board, huPlayer, depth + 1));
 
                 // undo the move
                 board[i] = i;
+
+                // prune
+                // if (best >= 10) return best;
             }
         }
 
@@ -192,10 +192,13 @@ function minimax_0(board, depth, player) {
 
                 // call minimax recursively and choose
                 // the minimum value
-                best = Math.min(best, minimax_0(board, depth + 1, aiPlayer));
+                best = Math.min(best, minimax(board, aiPlayer, depth + 1));
 
                 // undo the move
                 board[i] = i;
+
+                // prune
+                // if (best <= -10) return best;
             }
         }
 
@@ -215,7 +218,7 @@ function findBestMove(board, player) {
 
             // call minimax recursively and choose
             // the minimum value
-            let moveVal = minimax_0(board, 0, huPlayer);
+            let moveVal = minimax(board, huPlayer, 0);
 
             // undo the move
             board[i] = i;
@@ -230,86 +233,3 @@ function findBestMove(board, player) {
     return index;
 }
 
-// // get the best move in the current board
-// // ai is the maximizer
-// // human is the minimizer
-// function minimax(newBoard, player) {
-// 	treeLength++;
-// 	// get all available spots
-// 	let availSpots = emptySquares(newBoard);
-//
-// 	// return a value (-10, 0, 10) if a terminal state is found
-// 	// 3 terminal states:
-// 	// - human player wins
-// 	// - ai player wins
-// 	// - 2 players tie
-// 	if (checkWin(newBoard, huPlayer)) {
-// 		return {score: -10};
-// 	} else if (checkWin(newBoard, aiPlayer)) {
-// 		return {score: 10};
-// 	} else if (availSpots.length === 0) {
-// 		return {score: 0};
-// 	}
-//
-// 	// collect move objects in array moves
-// 	let moves = [];
-//
-// 	// loop through all available spots
-// 	for (let i = 0; i < availSpots.length; i++) {
-//
-// 		// create an object for a spot
-// 		let move = {};
-// 		// save its index
-// 		move.index = newBoard[availSpots[i]];
-// 		// place current player in that spot
-// 		newBoard[availSpots[i]] = player;
-//
-// 		// collect the score of the opponent with minimax
-// 		let result;
-// 		if (player === aiPlayer) {
-// 			result = minimax(newBoard, huPlayer);
-// 			move.score = result.score;
-// 		} else {
-// 			result = minimax(newBoard, aiPlayer);
-// 			move.score = result.score;
-// 		}
-//
-// 		// reset the spot to empty
-// 		newBoard[availSpots[i]] = move.index;
-//
-// 		// prune here
-//         if ((player === aiPlayer && move.score === 10) || (player === huPlayer && move.score === -10))
-//             return move;
-//         else
-//             moves.push(move);
-// 	}
-//
-// 	// find the best move (with best score) from all the moves
-// 	let bestMove;
-// 	let bestScore;
-//
-// 	// look for the highest score if player is ai
-// 	if (player === aiPlayer) {
-// 		bestScore = -Infinity;
-//
-// 		for (let i = 0; i < moves.length; i++) {
-// 			if (moves[i].score > bestScore) {
-// 				bestScore = moves[i].score;
-// 				bestMove = i;
-// 			}
-// 		}
-// 	// look for the lowest score if player is human
-// 	} else {
-// 		bestScore = Infinity;
-//
-// 		for (let i = 0; i < moves.length; i++) {
-// 			if (moves[i].score < bestScore) {
-// 				bestScore = moves[i].score;
-// 				bestMove = i;
-// 			}
-// 		}
-// 	}
-//
-// 	// return the best move
-// 	return moves[bestMove];
-// }
