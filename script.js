@@ -138,7 +138,7 @@ function evaluate(board) {
 
 // consider all possible ways the game can go and return
 // the value of the board
-function minimax(board, player, depth) {
+function minimax(board, player, depth, alpha, beta) {
     treeLength++;
     let score = evaluate(board);
 
@@ -160,7 +160,7 @@ function minimax(board, player, depth) {
     // ai player is the maximizer
     if (player === aiPlayer) {
         let best = -Infinity;
-
+        let val;
         for (let [i, elem] of board.entries()) {
             if (typeof elem === 'number') {
                 // make the move
@@ -168,10 +168,16 @@ function minimax(board, player, depth) {
 
                 // call minimax recursively and choose
                 // the maximum value
-                best = Math.max(best, minimax(board, huPlayer, depth + 1));
+                val = minimax(board, huPlayer, depth + 1, alpha, beta);
+                best = Math.max(best, val);
 
                 // undo the move
                 board[i] = i;
+
+                alpha = Math.max(alpha, val);
+                if (beta <= alpha) {
+                    break;
+                }
 
                 // prune
                 // if (best >= 10) return best;
@@ -184,6 +190,7 @@ function minimax(board, player, depth) {
     // hu player is the minimizer
     if (player === huPlayer) {
         let best = +Infinity;
+        let val;
 
         for (let [i, elem] of board.entries()) {
             if (typeof elem === 'number') {
@@ -192,10 +199,16 @@ function minimax(board, player, depth) {
 
                 // call minimax recursively and choose
                 // the minimum value
-                best = Math.min(best, minimax(board, aiPlayer, depth + 1));
+                val = minimax(board, aiPlayer, depth + 1, alpha, beta);
+                best = Math.min(best, val);
 
                 // undo the move
                 board[i] = i;
+
+                beta = Math.min(beta, val);
+                if (beta <= alpha) {
+                    break;
+                }
 
                 // prune
                 // if (best <= -10) return best;
@@ -218,7 +231,7 @@ function findBestMove(board, player) {
 
             // call minimax recursively and choose
             // the minimum value
-            let moveVal = minimax(board, huPlayer, 0);
+            let moveVal = minimax(board, huPlayer, 0, -Infinity, Infinity);
 
             // undo the move
             board[i] = i;
