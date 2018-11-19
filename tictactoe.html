@@ -1,41 +1,55 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
-	<title>Tic Tac Toe</title>
-	<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href='css/raleway.css' rel='stylesheet'>
+    <link href="css/fontello.css" rel="stylesheet">
+    <script src="js/jquery-3.3.1.min.js"></script>
 </head>
 <body>
-	<table>
-		<tr>
-			<td class="cell" id="0"></td>
-			<td class="cell" id="1"></td>
-			<td class="cell" id="2"></td>
-		</tr>
-		<tr>
-			<td class="cell" id="3"></td>
-			<td class="cell" id="4"></td>
-			<td class="cell" id="5"></td>
-		</tr>
-		<tr>
-			<td class="cell" id="6"></td>
-			<td class="cell" id="7"></td>
-			<td class="cell" id="8"></td>
-		</tr>
-	</table>
-	<div class="endgame">
-		<div class="text"></div>
-		<button onclick="startGame()">Replay</button>
-	</div>
+<div class="header">TIC TAC TOE</div>
 
-	<div class="selectSym">
-		<p>Select symbol:</p>
-		<button onClick="selectSym('X')">X</button>
-		<button onClick="selectSym('O')">O</button>
-	</div>
-	<button onclick="startGame()">Replay</button>
-	
+<div class="content">
+    <table class="grid3">
+        <tr>
+            <td class="cell" id="0"></td>
+            <td class="cell" id="1"></td>
+            <td class="cell" id="2"></td>
+        </tr>
+        <tr>
+            <td class="cell" id="3"></td>
+            <td class="cell" id="4"></td>
+            <td class="cell" id="5"></td>
+        </tr>
+        <tr>
+            <td class="cell" id="6"></td>
+            <td class="cell" id="7"></td>
+            <td class="cell" id="8"></td>
+        </tr>
+    </table>
 
-	<script src="script.js"></script>
+    <div class="menu">
+        <i class="icon-ccw" onClick="startGame()"></i>
+        <i class="icon-desktop" onClick="startGame()"></i>
+        <button onClick="startGame()">3 x 3</button>
+        <button onClick="startGame()">Easy</button>
+    </div>
+
+    <div class="endgame popup">
+        <p class="text"></p>
+        <i onclick="startGame()" class="icon-ccw"></i>
+    </div>
+
+    <div class="selectSym popup">
+        <p>Select</p>
+        <button onClick="selectSym('X')">X</button>
+        <button onClick="selectSym('O')">O</button>
+    </div>
+</div>
+
+
+<script src="js/script.js"></script>
 </body>
 </html>
