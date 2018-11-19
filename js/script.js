@@ -18,36 +18,35 @@ let cells = $('.cell');
 startGame();
 
 function startGame() {
+    origBoard = Array.from(Array(gridSize * gridSize).keys());
     $('.endgame').css({'display' : 'none'});
+    cells.text('').css({'background-color' : ''});
     $('.selectSym').css({'display' : 'block'});
-    cells.text('');
-    cells.css({'background-color' : ''});
 }
 
 function selectSym(sym) {
     huPlayer = sym;
     aiPlayer = sym === 'O' ? 'X' : 'O';
-    origBoard = Array.from(Array(gridSize * gridSize).keys());
-
-    cells.on("click", turnClick);
 
     $('.selectSym').css({'display' : 'none'});
+
+    cells.on("click", function(event) {
+        if (typeof origBoard[event.target.id] === 'number') {
+            turn(event.target.id, huPlayer);
+            if (!checkWin(origBoard, huPlayer) && !checkTie())
+                turn(bestSpot(), aiPlayer);
+        }
+        console.log(numNodes);
+        numNodes = 0;
+    });
+
+    cells.css({'cursor' : 'pointer'});
 
     if (aiPlayer === 'X') {
         turn([0, 2, 6, 8][Math.floor(Math.random()*4)], aiPlayer);
         console.log(numNodes);
         numNodes = 0;
     }
-}
-
-function turnClick(square) {
-    if (typeof origBoard[square.target.id] === 'number') {
-        turn(square.target.id, huPlayer);
-        if (!checkWin(origBoard, huPlayer) && !checkTie())
-            turn(bestSpot(), aiPlayer);
-    }
-    console.log(numNodes);
-    numNodes = 0;
 }
 
 function turn(squareId, player) {
@@ -91,7 +90,7 @@ function gameOver(gameWon) {
     }
 
     cells.off('click');
-
+    cells.css({'cursor' : 'default'});
     declareWinner(gameWon.player === huPlayer ? "You win!" : "You lose!");
 }
 

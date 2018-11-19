@@ -42,8 +42,8 @@ td {
 	text-align: center;
 	vertical-align: middle;
 	font-size: 100px;
-	cursor: pointer;
 }
+
 table {
 	border-collapse: collapse;
     margin: 20px auto;
@@ -87,6 +87,7 @@ table tr td:last-child {
 	border-radius: 10px;
 	background-color: #252525;
 	font-family: inherit;
+	cursor: pointer;
 }
 
 .selectSym button:hover {
@@ -118,6 +119,7 @@ table tr td:last-child {
 }
 
 .menu button {
+	cursor: pointer;
 	border: 0;
 	text-decoration: none;
 	border-radius: 5px;
@@ -129,6 +131,10 @@ table tr td:last-child {
 
 .menu button:hover {
 	background-color: #EFEBE1;
+}
+
+.menu i {
+	cursor: pointer;
 }
 
 .menu i:hover {
