@@ -83,13 +83,11 @@ table tr td:last-child {
 	font-size: 50px;
 	width: 70px;
 	border: 0;
-	text-decoration: none;
 	border-radius: 10px;
 	background-color: #252525;
 	font-family: inherit;
 	cursor: pointer;
 }
-
 .selectSym button:hover {
 	background: #EFEBE1;
 }
@@ -110,12 +108,14 @@ table tr td:last-child {
 
 .endgame i:hover {
 	color: #EFEBE1;
+	cursor: pointer;
 }
 
 .menu {
 	margin: 0 auto;
-	width: 270px;
+	width: 400px;
 	font-size: 30px;
+	text-align: center;
 }
 
 .menu button {
