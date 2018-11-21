@@ -140,3 +140,7 @@ table tr td:last-child {
 .menu i:hover {
 	color: #EFEBE1;
 }
+
+.menu .humanIcon {
+    display: none;
+}

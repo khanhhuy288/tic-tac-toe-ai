@@ -14,41 +14,37 @@
 <div class="content">
     <table class="grid3">
         <tr>
-            <td class="cell" id="0"></td>
-            <td class="cell" id="1"></td>
-            <td class="cell" id="2"></td>
+            <td class="cell" id="0"><span class="tmp"></span></td>
+            <td class="cell" id="1"><span class="tmp"></span></td>
+            <td class="cell" id="2"><span class="tmp"></span></td>
         </tr>
         <tr>
-            <td class="cell" id="3"></td>
-            <td class="cell" id="4"></td>
-            <td class="cell" id="5"></td>
+            <td class="cell" id="3"><span class="tmp"></span></td>
+            <td class="cell" id="4"><span class="tmp"></span></td>
+            <td class="cell" id="5"><span class="tmp"></span></td>
         </tr>
         <tr>
-            <td class="cell" id="6"></td>
-            <td class="cell" id="7"></td>
-            <td class="cell" id="8"></td>
+            <td class="cell" id="6"><span class="tmp"></span></td>
+            <td class="cell" id="7"><span class="tmp"></span></td>
+            <td class="cell" id="8"><span class="tmp"></span></td>
         </tr>
     </table>
 
     <div class="menu">
-        <i class="icon-ccw" onClick="startGame()"></i>
-        <i class="icon-desktop" onClick="startGame()"></i>
-        <!--<button onClick="startGame()">3 x 3</button>-->
-        <!--<button onClick="startGame()">Easy</button>-->
+        <i class="icon-ccw iconReset"></i>
     </div>
 
     <div class="endgame popup">
         <p class="text"></p>
-        <i onclick="startGame()" class="icon-ccw"></i>
+        <i class="icon-ccw iconReset"></i>
     </div>
 
     <div class="selectSym popup">
         <p>Select</p>
-        <button onClick="selectSym('X')">X</button>
-        <button onClick="selectSym('O')">O</button>
+        <button class="iconX">X</button>
+        <button class="iconO">O</button>
     </div>
 </div>
-
 
 <script src="js/script.js"></script>
 </body>

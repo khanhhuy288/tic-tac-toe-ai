@@ -1,12 +1,13 @@
 let origBoard;
 let huPlayer;
 let aiPlayer;
+// number of nodes on game tree
 let numNodes = 0;
 let gridSize = 3;
 let winCombos = getWinCombos(3);
 
 let cells = $('.cell');
-startGame();
+resetGame();
 
 /**
  * Generate all the win combos for a board.
@@ -39,9 +40,9 @@ function getWinCombos(n) {
 }
 
 /**
- * Bring the board to start state.
+ * Bring the board back to initial state.
  */
-function startGame() {
+function resetGame() {
     // create board
     origBoard = Array.from(Array(gridSize * gridSize).keys());
 
@@ -58,8 +59,10 @@ function startGame() {
     $('.selectSym').css({'display' : 'block'});
 }
 
+$('.iconReset').on('click', resetGame);
+
 /**
- * Select the symbol to play.
+ * Assign each player to a symbol
  * X goes first.
  * @param sym X or O.
  */
@@ -73,6 +76,23 @@ function selectSym(sym) {
     // enable cursor for cells
     cells.css({'cursor' : 'pointer'});
 
+    // start the game
+    startGame();
+}
+
+$('.iconX').on('click', function () {
+    selectSym('X');
+} );
+
+$('.iconO').on('click', function () {
+    selectSym('O');
+});
+
+/**
+ * Add click event to cells and switch between players after
+ * each turn.
+ */
+function startGame() {
     // let AI move first if ai chooses X
     if (aiPlayer === 'X') {
         // AI plays in 1 of the corners as they're the strongest openings ỉn 3x3.
@@ -94,11 +114,9 @@ function selectSym(sym) {
                 turn(findBestMove(origBoard), aiPlayer);
         }
 
-
         console.log(numNodes);
         numNodes = 0;
     });
-
 }
 
 /**
@@ -162,7 +180,7 @@ function match(winCombo, moves) {
  */
 function checkTie() {
     // check if board is full
-    if (!isNotFull(origBoard)) {
+    if (!moveLeft(origBoard)) {
         // highlights all cells
         cells.css({'background-color' : '#414141'});
 
@@ -212,11 +230,11 @@ function declareWinner(player) {
 }
 
 /**
- * Check if board is not full.
+ * Check if there's any empty cell left.
  * @param board The board.
  * @returns {boolean} True if board is not full, otherwise False.
  */
-function isNotFull(board) {
+function moveLeft(board) {
     for (let elem of board) {
         if (typeof elem === 'number') {
             return true;
@@ -228,14 +246,14 @@ function isNotFull(board) {
 /**
  * Evaluate the board when it's full (in terminal state).
  * @param board The board.
- * @returns {number} -1 if AI wins, 1 if human wins, 0 if it's a draw.
+ * @returns {number} -100 if AI wins, 100 if human wins, 0 if it's a draw.
  */
 function evaluate(board) {
     if (checkWin(board, huPlayer)) {
-        return -10;
+        return -100;
     } else if (checkWin(board, aiPlayer)) {
-        return 10;
-    } else if (!isNotFull(board)) {
+        return 100;
+    } else if (!moveLeft(board)) {
         return 0;
     }
 }
@@ -261,17 +279,17 @@ function minimax(board, player, depth, alpha, beta) {
     let score = evaluate(board);
 
     // ai player wins
-    if (score === 10) {
+    if (score === 100) {
         return score - depth;
     }
 
     // human player wins
-    if (score === -10) {
+    if (score === -100) {
         return score + depth;
     }
 
     // a tie
-    if (!isNotFull(board)) {
+    if (!moveLeft(board)) {
         return 0;
     }
 
