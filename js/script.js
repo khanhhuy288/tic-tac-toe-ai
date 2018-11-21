@@ -243,19 +243,115 @@ function moveLeft(board) {
     return false;
 }
 
+// /**
+//  * Evaluate the board when it's full (in terminal state).
+//  * @param board The board.
+//  * @returns {number} -100 if AI wins, 100 if human wins, 0 if it's a draw.
+//  */
+// function evaluate(board) {
+//     if (checkWin(board, huPlayer)) {
+//         return -100;
+//     } else if (checkWin(board, aiPlayer)) {
+//         return 100;
+//     } else if (!moveLeft(board)) {
+//         return 0;
+//     }
+// }
+
 /**
- * Evaluate the board when it's full (in terminal state).
+ * The heuristic evaluation function for the current board
  * @param board The board.
- * @returns {number} -100 if AI wins, 100 if human wins, 0 if it's a draw.
+ * @returns {number} sum of the evaluations of 3 rows, 3 columns and 2 diagonals
  */
 function evaluate(board) {
-    if (checkWin(board, huPlayer)) {
-        return -100;
-    } else if (checkWin(board, aiPlayer)) {
-        return 100;
-    } else if (!moveLeft(board)) {
-        return 0;
+    let score = 0;
+    // Evaluate score for each of the 8 lines (3 rows, 3 columns, 2 diagonals)
+    for(let line of winCombos) {
+        score += evaluateLine(board, line[0], line[1], line[2]);
     }
+    return score;
+}
+
+/**
+ * The heuristic evaluation function for the given line of 3 cells
+ * @param board The board.
+ * @param cellId1 Id of the first cell in the line
+ * @param cellId2 Id of the second cell in the line
+ * @param cellId3 Id of the third cell in the line
+ * @returns {number} +100 for 3-in-a-line for AI,
+ *  +10 for 2-in-a-line (with a empty cell) for AI,
+ *  +1 for 1-in-a-line (with two empty cells) for AI,
+ *  -100, -10, -1 for 3-, 2-, 1-in-a-line for opponent,
+ *  0 otherwise (empty lines or lines with both AI's and human's seed)
+ */
+function evaluateLine(board, cellId1, cellId2, cellId3) {
+    let score = 0;
+
+    // First cell
+    if (board[cellId1] === aiPlayer) {
+        score = 1;
+    } else if (board[cellId1] === huPlayer) {
+        score = -1;
+    }
+
+    // Second cell
+    if (board[cellId2] === aiPlayer) {
+        // 1st cell is aiPlayer => 2-in-a-line
+        if (score === 1) {
+            score = 10;
+        }
+        // 1st cell is huPlayer
+        else if (score === -1) {
+            return 0;
+        }
+        // 1st cell is empty => 1-in-a-line
+        else {
+            score = 1;
+        }
+    } else if (board[cellId2] === huPlayer) {
+        // 1st cell is huPlayer => 2-in-a-line
+        if (score === -1) {
+            score = -10;
+        }
+        // 1st cell is aiPlayer
+        else if (score === 1) {
+            return 0;
+        }
+        // 1st cell is empty => 1-in-a-line
+        else {
+            score = -1;
+        }
+    }
+
+    // Third cell
+    if (board[cellId3] === aiPlayer) {
+        // 1st and/or 2nd cell is aiPlayer => 2- or 3-in-a-line
+        if (score > 0) {
+            score *= 10;
+        }
+        // 1st and/or 2nd cell is huPlayer
+        else if (score < 0) {
+            return 0;
+        }
+        // 1st and 2nd cell are empty => 1-in-a-line
+        else {
+            score = 1;
+        }
+    } else if (board[cellId3] === huPlayer) {
+        // 1st and/or 2nd cell is huPlayer => 2- or 3-in-a-line
+        if (score < 0) {
+            score *= 10;
+        }
+        // 1st and/or 2nd cell is aiPlayer
+        else if (score > 1) {
+            return 0;
+        }
+        // 1st and 2nd cell are empty => 1-in-a-line
+        else {
+            score = -1;
+        }
+    }
+    return score;
 }
 
 /**
@@ -279,12 +375,12 @@ function minimax(board, player, depth, alpha, beta) {
     let score = evaluate(board);
 
     // ai player wins
-    if (score === 100) {
+    if (score > 0) {
         return score - depth;
     }
 
     // human player wins
-    if (score === -100) {
+    if (score < 0) {
         return score + depth;
     }
 
