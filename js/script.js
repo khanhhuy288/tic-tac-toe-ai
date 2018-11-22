@@ -447,6 +447,86 @@ function minimax(board, player, depth, alpha, beta) {
     }
 }
 
+function minimaxLimitedDepth(board, player, depth, maxDepth, alpha, beta) {
+    numNodes++;
+
+    // evaluate the current position
+    let score = evaluate(board);
+
+    if (depth >= maxDepth) {
+        // ai player wins
+        if (score > 0) {
+            return score - depth;
+        }
+
+        // human player wins
+        if (score < 0) {
+            return score + depth;
+        }
+
+        // a tie
+        if (!moveLeft(board)) {
+            return 0;
+        }
+    }
+    // ai player is the maximizer
+    if (player === aiPlayer) {
+        let best = -Infinity;
+        let val;
+        for (let [i, elem] of board.entries()) {
+            if (typeof elem === 'number') {
+                // make the move
+                board[i] = player;
+
+                // call minimax recursively and choose
+                // the maximum value
+                val = minimax(board, huPlayer, depth + 1, alpha, beta);
+                best = Math.max(best, val);
+
+                // undo the move
+                board[i] = i;
+
+                // prune with alpha, beta
+                alpha = Math.max(alpha, val);
+                if (beta <= alpha) {
+                    break;
+                }
+            }
+        }
+
+        return best;
+    }
+
+    // hu player is the minimizer
+    else {
+        let best = +Infinity;
+        let val;
+
+        for (let [i, elem] of board.entries()) {
+            if (typeof elem === 'number') {
+                // make the move
+                board[i] = player;
+
+                // call minimax recursively and choose
+                // the minimum value
+                val = minimax(board, aiPlayer, depth + 1, alpha, beta);
+                best = Math.min(best, val);
+
+                // undo the move
+                board[i] = i;
+
+                // prune with alpha, beta
+                beta = Math.min(beta, val);
+                if (beta <= alpha) {
+                    break;
+                }
+            }
+        }
+
+        return best;
+    }
+}
+
 /**
  * Find the best move for AI.
  * @param board The board.
@@ -465,6 +545,7 @@ function findBestMove(board) {
             // call minimax recursively and choose
             // the minimum value
             let moveVal = minimax(board, huPlayer, 0, -Infinity, Infinity);
+            // let moveVal = minimaxLimitedDepth(board, huPlayer, 0, 3, -Infinity, Infinity);
 
             // undo the move
             board[i] = i;
