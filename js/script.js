@@ -114,7 +114,7 @@ function startGame() {
                 turn(findBestMove(origBoard), aiPlayer);
         }
 
-        console.log(numNodes);
+        console.log("numNodes = " + numNodes);
         numNodes = 0;
     });
 }
@@ -453,7 +453,7 @@ function minimaxLimitedDepth(board, player, depth, maxDepth, alpha, beta) {
     // evaluate the current position
     let score = evaluate(board);
 
-    if (depth >= maxDepth) {
+    // if (depth >= maxDepth) {
         // ai player wins
         if (score > 0) {
             return score - depth;
@@ -468,7 +468,7 @@ function minimaxLimitedDepth(board, player, depth, maxDepth, alpha, beta) {
         if (!moveLeft(board)) {
             return 0;
         }
-    }
+    // }
     // ai player is the maximizer
     if (player === aiPlayer) {
         let best = -Infinity;
@@ -478,9 +478,17 @@ function minimaxLimitedDepth(board, player, depth, maxDepth, alpha, beta) {
                 // make the move
                 board[i] = player;
 
+
+                // depth++;
+                // console.log("depth = "  + depth);
+                // console.log("maxDepth = "  + maxDepth);
+                // if (depth >= maxDepth) {
+                //     console.log("RIP!!!!!!!!");
+                //     break;
+                // }
                 // call minimax recursively and choose
                 // the maximum value
-                val = minimax(board, huPlayer, depth + 1, alpha, beta);
+                val = minimaxLimitedDepth(board, huPlayer, depth + 1, maxDepth, alpha, beta);
                 best = Math.max(best, val);
 
                 // undo the move
@@ -507,9 +515,17 @@ function minimaxLimitedDepth(board, player, depth, maxDepth, alpha, beta) {
                 // make the move
                 board[i] = player;
 
+
+                // depth++;
+                // console.log("depth = "  + depth);
+                // console.log("maxDepth = "  + maxDepth);
+                // if (depth >= maxDepth) {
+                //     console.log("RIP!!!!!!!!");
+                //     break;
+                // }
                 // call minimax recursively and choose
                 // the minimum value
-                val = minimax(board, aiPlayer, depth + 1, alpha, beta);
+                val = minimaxLimitedDepth(board, aiPlayer, depth + 1, maxDepth, alpha, beta);
                 best = Math.min(best, val);
 
                 // undo the move
@@ -544,8 +560,8 @@ function findBestMove(board) {
 
             // call minimax recursively and choose
             // the minimum value
-            let moveVal = minimax(board, huPlayer, 0, -Infinity, Infinity);
-            // let moveVal = minimaxLimitedDepth(board, huPlayer, 0, 3, -Infinity, Infinity);
+            // let moveVal = minimax(board, huPlayer, 0, -Infinity, Infinity);
+            let moveVal = minimaxLimitedDepth(board, huPlayer, 0, 3, -Infinity, Infinity);
 
             // undo the move
             board[i] = i;
