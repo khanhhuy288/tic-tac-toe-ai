@@ -23,15 +23,15 @@ function getWinCombos(n) {
 
     for (let i = 0; i < n; i++) {
         for (let j = 0; j < n; j++) {
-            row.push(n*i + j);
-            col.push(i + n*j);
+            row.push(n * i + j);
+            col.push(i + n * j);
         }
         result.push(row, col);
         row = [];
         col = [];
 
-        diagonalLeft.push((n+1) * i);
-        diagonalRight.push((n-1) * (i+1));
+        diagonalLeft.push((n + 1) * i);
+        diagonalRight.push((n - 1) * (i + 1));
     }
 
     result.push(diagonalLeft, diagonalRight);
@@ -47,16 +47,16 @@ function resetGame() {
     origBoard = Array.from(Array(gridSize * gridSize).keys());
 
     // remove highlights from previous game
-    cells.text('').css({'background-color' : ''});
+    cells.text('').css({'background-color': ''});
 
     // make cursor over cells normal
-    cells.css({'cursor' : 'default'});
+    cells.css({'cursor': 'default'});
 
     // close end game box
-    $('.endgame').css({'display' : 'none'});
+    $('.endgame').css({'display': 'none'});
 
     // open select symbol box
-    $('.selectSym').css({'display' : 'block'});
+    $('.selectSym').css({'display': 'block'});
 }
 
 $('.iconReset').on('click', resetGame);
@@ -71,10 +71,10 @@ function selectSym(sym) {
     aiPlayer = sym === 'O' ? 'X' : 'O';
 
     // close select symbol box
-    $('.selectSym').css({'display' : 'none'});
+    $('.selectSym').css({'display': 'none'});
 
     // enable cursor for cells
-    cells.css({'cursor' : 'pointer'});
+    cells.css({'cursor': 'pointer'});
 
     // start the game
     startGame();
@@ -82,7 +82,7 @@ function selectSym(sym) {
 
 $('.iconX').on('click', function () {
     selectSym('X');
-} );
+});
 
 $('.iconO').on('click', function () {
     selectSym('O');
@@ -97,14 +97,14 @@ function startGame() {
     if (aiPlayer === 'X') {
         // AI plays in 1 of the corners as they're the strongest openings ỉn 3x3.
         // human must play the center cell to get a draw.
-        turn([0, 2, 6, 8][Math.floor(Math.random()*4)], aiPlayer);
+        turn([0, 2, 6, 8][Math.floor(Math.random() * 4)], aiPlayer);
 
         console.log(numNodes);
         numNodes = 0;
     }
 
     // switch between players when an empty cell is click on
-    cells.on("click", function(event) {
+    cells.on("click", function (event) {
         if (typeof origBoard[event.target.id] === 'number') {
             // human chooses a cell
             turn(event.target.id, huPlayer);
@@ -129,7 +129,7 @@ function turn(cellId, player) {
     origBoard[cellId] = player;
 
     // set the symbol's color
-    $('#' + cellId).text(player).css({'color' : player === 'X' ? '#3FC0E0' : '#E95151'});
+    $('#' + cellId).text(player).css({'color': player === 'X' ? '#3FC0E0' : '#E95151'});
 
     // check if game is won
     let gameWon = checkWin(origBoard, player);
@@ -182,13 +182,13 @@ function checkTie() {
     // check if board is full
     if (!moveLeft(origBoard)) {
         // highlights all cells
-        cells.css({'background-color' : '#414141'});
+        cells.css({'background-color': '#414141'});
 
         // make cells unclickable
         cells.off('click');
 
         // make cursor normal
-        cells.css({'cursor' : 'default'});
+        cells.css({'cursor': 'default'});
 
         // declare a tie
         declareWinner("It's a Tie!");
@@ -205,14 +205,14 @@ function checkTie() {
 function gameOver(gameWon) {
     // color win combo of the winner
     for (let index of winCombos[gameWon.index]) {
-        $('#' + index).css({'background-color' : "#414141"});
+        $('#' + index).css({'background-color': "#414141"});
     }
 
     // make cells unclickable
     cells.off('click');
 
     // make cursor normal
-    cells.css({'cursor' : 'default'});
+    cells.css({'cursor': 'default'});
 
     // declare victory or defeat for human
     declareWinner(gameWon.player === huPlayer ? "You win!" : "You lose!");
@@ -226,7 +226,7 @@ function declareWinner(player) {
     // add end game text
     $(".endgame .text").text(player);
     // open end game box
-    $(".endgame").css({'display' : 'block'});
+    $(".endgame").css({'display': 'block'});
 }
 
 /**
@@ -266,11 +266,31 @@ function moveLeft(board) {
 function evaluate(board) {
     let score = 0;
     // Evaluate score for each of the 8 lines (3 rows, 3 columns, 2 diagonals)
-    for(let line of winCombos) {
+    for (let line of winCombos) {
         score += evaluateLine(board, line[0], line[1], line[2]);
     }
     return score;
 }
+
+// function evaluate(board) {
+//     let pos_X = [];
+//     let pos_O = [];
+//
+//     for (var [i, cell] of board.entries()) {
+//         if (cell == 'X')
+//             pos_X.push(i);
+//
+//         if (cell == 'O')
+//             pos_O.push(i);
+//     }
+//
+//     // number of possible winning line for X
+//     let score_X = winCombos.reduce((acc, combo) => acc + (combo.filter(val => pos_O.indexOf(val) !== -1).length === 0 ? 1 : 0), 0);
+//     // number of possible winning line for O
+//     let score_O = winCombos.reduce((acc, combo) => acc + (combo.filter(val => pos_X.indexOf(val) !== -1).length === 0 ? 1 : 0), 0);
+//
+//     return score_X - score_O;
+// }
 
 /**
  * The heuristic evaluation function for the given line of 3 cells
@@ -449,26 +469,27 @@ function minimax(board, player, depth, alpha, beta) {
 
 function minimaxLimitedDepth(board, player, depth, maxDepth, alpha, beta) {
     numNodes++;
-
     // evaluate the current position
     let score = evaluate(board);
 
-    // if (depth >= maxDepth) {
-        // ai player wins
-        if (score > 0) {
-            return score - depth;
-        }
+    // base cases
+    // maxDepth reached
+    if (depth >= maxDepth) {
+        return score;
+    }
+    // ai player wins
+    if (score > 0) {
+        return score - depth;
+    }
+    // human player wins
+    if (score < 0) {
+        return score + depth;
+    }
+    // a tie
+    if (!moveLeft(board)) {
+        return 0;
+    }
 
-        // human player wins
-        if (score < 0) {
-            return score + depth;
-        }
-
-        // a tie
-        if (!moveLeft(board)) {
-            return 0;
-        }
-    // }
     // ai player is the maximizer
     if (player === aiPlayer) {
         let best = -Infinity;
@@ -478,14 +499,6 @@ function minimaxLimitedDepth(board, player, depth, maxDepth, alpha, beta) {
                 // make the move
                 board[i] = player;
 
-
-                // depth++;
-                // console.log("depth = "  + depth);
-                // console.log("maxDepth = "  + maxDepth);
-                // if (depth >= maxDepth) {
-                //     console.log("RIP!!!!!!!!");
-                //     break;
-                // }
                 // call minimax recursively and choose
                 // the maximum value
                 val = minimaxLimitedDepth(board, huPlayer, depth + 1, maxDepth, alpha, beta);
@@ -515,14 +528,6 @@ function minimaxLimitedDepth(board, player, depth, maxDepth, alpha, beta) {
                 // make the move
                 board[i] = player;
 
-
-                // depth++;
-                // console.log("depth = "  + depth);
-                // console.log("maxDepth = "  + maxDepth);
-                // if (depth >= maxDepth) {
-                //     console.log("RIP!!!!!!!!");
-                //     break;
-                // }
                 // call minimax recursively and choose
                 // the minimum value
                 val = minimaxLimitedDepth(board, aiPlayer, depth + 1, maxDepth, alpha, beta);
